@@ -1,5 +1,7 @@
 import asyncio
+import http
 import json
+import os
 from pprint import pprint
 
 import httpx
@@ -38,11 +40,18 @@ class Schedule:
     }
 
 
-local_url = 'http://localhost:8008'
+local_url = os.environ.get('URL', 'http://localhost:8008')
 
 
 async def main():
     async with httpx.AsyncClient() as client:
+        while True:
+            try:
+                resp = await client.get(local_url, follow_redirects=True)
+                if resp.status_code == http.HTTPStatus.OK:
+                    break
+            except:
+                pass
         weekday = None
         teacher = None
         schedule = []

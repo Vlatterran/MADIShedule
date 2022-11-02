@@ -1,0 +1,5 @@
+httpx~=0.23.0
+beautifulsoup4~=4.11.1
+
+#implicit
+lxml~=4.9.1 # for bs4
