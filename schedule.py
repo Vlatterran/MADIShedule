@@ -19,7 +19,7 @@ class Schedule:
         4: 'Пятница',
         5: 'Суббота',
         6: 'Воскресенье',
-        -1: 'Полнодневные занятия'
+        # -1: 'Полнодневные занятия'
     }
     ru_dec = {
         'Понедельник': 0,
@@ -29,7 +29,7 @@ class Schedule:
         'Пятница': 4,
         'Суббота': 5,
         'Воскресенье': 6,
-        'Полнодневные занятия': -1
+        # 'Полнодневные занятия': -1
     }
     shortens = {
         'Числ': 'Числитель',
@@ -61,7 +61,6 @@ class Schedule:
                           group_id: str,
                           schedule: dict,
                           client: httpx.AsyncClient):
-        print(f'processing {group_name}')
         weekday = None
         response = await client.post('https://www.madi.ru/tplan/tasks/tableFiller.php',
                                      data={'tab': 7, 'gp_name': group_name, 'gp_id': group_id})
@@ -114,7 +113,5 @@ class Schedule:
 
                     day.setdefault(context['frequency'], []).append(line)
                 except Exception as e:
-                    print(type(e), e, f'\n{context}')
                     logging.exception(e)
                     continue
-        print(f'processed {group_name}')
