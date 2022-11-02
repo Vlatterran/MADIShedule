@@ -1,4 +1,5 @@
 import http
+import urllib.parse
 
 from fastapi.routing import APIRouter
 from fastapi.responses import Response
@@ -20,10 +21,15 @@ async def get_classroom(name: str):
     return await Classroom_Pydantic.from_queryset_single(Classroom.get(name=name).only(Classroom.fields))
 
 
-@router.post('/{name}', status_code=http.HTTPStatus.CREATED)
+@router.post('/{name}', status_code=http.HTTPStatus.CREATED, response_model=Classroom_Pydantic,
+             responses={
+                 201: {'headers': {'Location': {'type': 'URL', 'description': 'URL for created classroom'}}}
+             })
 async def create_teacher(name: str, response: Response, request: Request):
-    await Classroom.create(name=name)
-    response.headers['Location'] = request.url.path
+    c = await Classroom.create(name=name)
+    await c.fetch_related()
+    response.headers['Location'] = str(request.url.replace(path=urllib.parse.quote(request.url.path)))
+    return Classroom_Pydantic.from_orm(c)
 
 
 @router.delete('/{name}')

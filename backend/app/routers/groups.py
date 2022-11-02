@@ -1,4 +1,5 @@
 import http
+import urllib.parse
 
 from fastapi.routing import APIRouter
 from fastapi.requests import Request
@@ -20,10 +21,15 @@ async def get_group(name: str):
     return await Group_Pydantic.from_queryset_single(Group.get(name=name))
 
 
-@router.post('/{name}', status_code=http.HTTPStatus.CREATED)
+@router.post('/{name}', status_code=http.HTTPStatus.CREATED, response_model=Group_Pydantic,
+             responses={
+                 201: {'headers': {'Location': {'type': 'URL', 'description': 'URL for created group'}}}
+             })
 async def create_group(name: str, response: Response, request: Request):
-    await Group.create(name=name)
-    response.headers['Location'] = request.url.path
+    g = await Group.create(name=name)
+    await g.fetch_related()
+    response.headers['Location'] = str(request.url.replace(path=urllib.parse.quote(request.url.path)))
+    return Group_Pydantic.from_orm(g)
 
 
 @router.delete('/{name}')
