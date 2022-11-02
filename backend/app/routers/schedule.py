@@ -1,8 +1,8 @@
 import datetime
 
 from fastapi import Query
+from fastapi.responses import JSONResponse, Response
 from fastapi.routing import APIRouter
-from starlette.responses import JSONResponse, Response
 from tortoise.queryset import QuerySet
 
 from ..models.pydantic_models import Line_Pydantic, LineIn_Pydantic, LinePeriodicIn_Pydantic
@@ -27,16 +27,16 @@ async def check_time(existing_lines: QuerySet[Line], line: LineIn_Pydantic | Lin
                                     period=Frequency.MONTH,
                                     start__startswith=line.start,
                                     end__startswith=line.end)
-                # c = await query.count()
-                # if c == 1:
-                #     continue
-                # return JSONResponse(
-                #     status_code=422,
-                #     content={
-                #         'detail':
-                #             f'overlapping time with schedule line(ids={await query.values_list("id", flat=True)})',
-                #     }
-                # )
+                c = await query.count()
+                if c == 1:
+                    continue
+                return JSONResponse(
+                    status_code=422,
+                    content={
+                        'detail':
+                            f'overlapping time with schedule line(ids={await query.values_list("id", flat=True)})',
+                    }
+                )
             return JSONResponse(
                 status_code=422,
                 content={
@@ -46,13 +46,12 @@ async def check_time(existing_lines: QuerySet[Line], line: LineIn_Pydantic | Lin
             )
 
 
-@router.get("/", response_model=list[Line_Pydantic],
-            deprecated=True,
-            description='For debug only',
-            tags=['debug'])
-@router.head("/")
-async def get_schedule():
-    return await Line_Pydantic.from_queryset(Line.all())
+@router.post("/", response_model=list[Line_Pydantic],
+             deprecated=True,
+             description='For debug only',
+             tags=['debug'])
+async def get_schedule(filters: dict = None):
+    return await Line_Pydantic.from_queryset(Line.all().filter(**filters))
 
 
 @router.get("/get_by_date", response_model=list[Line_Pydantic])
