@@ -1,6 +1,6 @@
 import asyncio
 import os
-import pathlib
+import sys
 from pathlib import Path
 
 import aiofiles
@@ -8,7 +8,6 @@ import starlette.routing
 import tortoise.exceptions
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, ORJSONResponse
-from starlette.staticfiles import StaticFiles
 from tortoise import connections
 from tortoise.contrib.fastapi import register_tortoise
 
@@ -20,8 +19,6 @@ app = FastAPI(
     contact={'Vlatterran': 'soboleff@mail.ru'},
     default_response_class=ORJSONResponse)
 
-app.mount('/static', StaticFiles(directory=f'{os.path.join(pathlib.Path(__file__).parents[1], "static")}'),
-          name="static")
 app.include_router(groups.router, prefix='/groups', tags=['groups'])
 app.include_router(teachers.router, prefix='/teachers', tags=['teacher'])
 app.include_router(classrooms.router, prefix='/classrooms', tags=['classrooms'])
@@ -33,18 +30,26 @@ register_tortoise(app,
                   generate_schemas=True,
                   add_exception_handlers=True)
 
-
-async def startup(self) -> None:
-    """
-    Run any `.on_startup` event handlers.
-    """
-    tasks = []
-    for handler in self.on_startup:
-        if asyncio.iscoroutinefunction(handler):
-            tasks.append(asyncio.create_task(handler()))
-        else:
-            handler()
-    await asyncio.gather(*tasks)
+if sys.version_info >= (3, 11):
+    async def startup(self) -> None:
+        async with asyncio.TaskGroup() as tg:
+            for handler in self.on_startup:
+                if asyncio.iscoroutinefunction(handler):
+                    tg.create_task(handler())
+                else:
+                    handler()
+else:
+    async def startup(self) -> None:
+        """
+        Run any `.on_startup` event handlers.
+        """
+        tasks = []
+        for handler in self.on_startup:
+            if asyncio.iscoroutinefunction(handler):
+                tasks.append(asyncio.create_task(handler()))
+            else:
+                handler()
+        await asyncio.gather(*tasks)
 
 
 starlette.routing.Router.startup = startup
