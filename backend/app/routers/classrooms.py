@@ -27,7 +27,7 @@ async def get_classroom(name: str):
              })
 async def create_teacher(name: str, response: Response, request: Request):
     c = await Classroom.create(name=name)
-    await c.fetch_related()
+    await c.fetch_related('lines')
     response.headers['Location'] = str(request.url.replace(path=urllib.parse.quote(request.url.path)))
     return Classroom_Pydantic.from_orm(c)
 

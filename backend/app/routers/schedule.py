@@ -105,8 +105,9 @@ async def create_schedule(line: LinePeriodicIn_Pydantic):
 
 @router.post('/{id}/specify_date')
 async def specify(id: int, date: datetime.date = Query(example=datetime.date.fromisoformat('2022-10-05'))):
-    line = await Line.get(id=id)
-    return Line_Pydantic.from_orm(await Line.create())
+    line = await Line.get(id=id).prefetch_related()
+    return Line_Pydantic.from_orm(
+        await Line.create(**Line_Pydantic.from_orm(line).dict() | dict(date=date, origin=line)))
 
 
 @router.delete('/{id}')

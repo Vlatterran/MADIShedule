@@ -27,7 +27,7 @@ async def get_group(name: str):
              })
 async def create_group(name: str, response: Response, request: Request):
     g = await Group.create(name=name)
-    await g.fetch_related()
+    await g.fetch_related('lines')
     response.headers['Location'] = str(request.url.replace(path=urllib.parse.quote(request.url.path)))
     return Group_Pydantic.from_orm(g)
 
