@@ -1,5 +1,5 @@
 services:
-  web:
+  backend:
     build: backend
     container_name: api
     ports:
@@ -7,6 +7,20 @@ services:
     environment:
       - DATABASE_URL=sqlite://db.sqlite3
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+    networks:
+      - app_network
+
+  frontend:
+    build: frontend
+    container_name: front
+    ports:
+      - 8009:8000
+
+    environment:
+      - API_URL=http://api:8000
+    command: uvicorn frontend.main:app --host 0.0.0.0 --port 8000
+    networks:
+      - app_network
 
   prepare:
     build: dataloader
@@ -14,5 +28,8 @@ services:
     environment:
       - URL=http://localhost:8008
     depends_on:
-      - web
+      - backend
     network_mode: host
+
+networks:
+  app_network:
