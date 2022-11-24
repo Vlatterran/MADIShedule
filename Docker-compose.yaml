@@ -26,10 +26,11 @@ services:
     build: dataloader
     command: python dataloader.py
     environment:
-      - URL=http://localhost:8008
+      - URL=http://api:8000
     depends_on:
       - backend
-    network_mode: host
+    networks:
+      - app_network
 
 networks:
   app_network:
