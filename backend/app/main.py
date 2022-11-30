@@ -8,6 +8,7 @@ import starlette.routing
 import tortoise.exceptions
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, ORJSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 from tortoise import connections
 from tortoise.contrib.fastapi import register_tortoise
 
@@ -18,6 +19,12 @@ app = FastAPI(
     title=os.environ.get('TITLE', 'ASU MADI schedule API'),
     contact={'Vlatterran': 'soboleff@mail.ru'},
     default_response_class=ORJSONResponse)
+
+
+@app.on_event("startup")
+async def startup():
+    Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
 
 app.include_router(groups.router, prefix='/groups', tags=['groups'])
 app.include_router(teachers.router, prefix='/teachers', tags=['teacher'])
@@ -50,7 +57,6 @@ else:
             else:
                 handler()
         await asyncio.gather(*tasks)
-
 
 starlette.routing.Router.startup = startup
 

@@ -32,5 +32,16 @@ services:
     networks:
       - app_network
 
+  prometheus:
+    container_name: prometheus
+    build: prometheus
+    networks:
+      - app_network
+    environment:
+      TZ: Europe/Moscow
+    ports:
+      - 9090:9090
+
+
 networks:
   app_network:
