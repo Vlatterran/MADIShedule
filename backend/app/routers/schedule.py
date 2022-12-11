@@ -55,10 +55,10 @@ async def get_schedule(filters: dict = None):
 
 
 @router.get("/get_by_date", response_model=list[Line_Pydantic])
-async def get_schedule(date: datetime.date = Query(example=datetime.date.fromisoformat('2022-10-05')),
-                       teacher: str = Query(default=None, example='Петров И.И.'),
-                       classroom: str = Query(default=None, example='666'),
-                       group: str = Query(default=None, example='1бвгд')
+async def get_schedule(date: datetime.date = Query(example='2022-10-05'),
+                       teacher: str = Query(default=None),
+                       classroom: str = Query(default=None),
+                       group: str = Query(default=None)
                        ):
     filtes = {}
     if teacher is not None:
