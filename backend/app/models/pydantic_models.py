@@ -64,7 +64,7 @@ class LineIn_Pydantic(PydanticModel):
     date: datetime.date
     start: datetime.time
     end: datetime.time
-    teacher_id: str
+    teacher_id: str | None
     group_id: str
     classroom_id: str
     type: LectureType
@@ -95,7 +95,7 @@ class LinePeriodicIn_Pydantic(PydanticModel):
     name: str | None
     start: datetime.time
     end: datetime.time
-    teacher_id: str
+    teacher_id: str | None
     group_id: str
     classroom_id: str
     week_type: WeekType

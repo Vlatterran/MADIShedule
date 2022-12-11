@@ -79,6 +79,7 @@ class Weekday(enum.IntEnum):
     Thursday = 3
     FRIDAY = 4
     SATURDAY = 5
+    SUNDAY = 6
 
 
 class Line(Model):
@@ -106,7 +107,8 @@ class Line(Model):
     def get_by_date(cls, date: datetime.date) -> QuerySet['Line']:
         return Line.filter(Q(date=date) |
                            (Q(weekday=date.weekday()) &
-                            Q(week_type__in=[0, 1 + is_week_even(date.timetuple())])))
+                            Q(week_type__in=[0, 1 + is_week_even(date.timetuple())]) &
+                            Q(period=1)))
 
     class Meta:
         unique_together = (
