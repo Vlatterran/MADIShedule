@@ -7,6 +7,7 @@ import aiofiles
 import starlette.routing
 import tortoise.exceptions
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from tortoise import connections
@@ -19,6 +20,14 @@ app = FastAPI(
     title=os.environ.get('TITLE', 'ASU MADI schedule API'),
     contact={'Vlatterran': 'soboleff@mail.ru'},
     default_response_class=ORJSONResponse)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080", "http://localhost:8009"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
