@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>document.getElementsByTagName("html")[0].className += " js";</script>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/table-schedule.css') }}">
+    <title>Расписание аудиторий ({{ date }})</title>
+</head>
+<body>
+<header class="cd-main-header text-center flex flex-column flex-center">
+    <h1 class="text-xl">Расписание аудиторий на {{ date }}</h1>
+</header>
+<div style="overflow:auto">
+  <table class="table-schedule">
+  </table>
+</div>
+<script>
+    const date_for_schedule = "{{ date }}"
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="{{ url_for('static', path='/js/table-schedule.js') }}"></script>
+<script src="{{ url_for('static', path='/js/main.js') }}"></script>
+</body>
+</html>
