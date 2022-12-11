@@ -24,15 +24,15 @@
         return _typeof(obj);
     }
 
-    var createElem = function createElem(obj) {
+    const createElem = function createElem(obj) {
         if (!obj || !obj.tagName) {
             return null;
         }
 
-        var el = document.createElement(obj.tagName);
+        const el = document.createElement(obj.tagName);
 
         if (obj.attr && Object.keys(obj.attr).length) {
-            for (var key in obj.attr) {
+            for (const key in obj.attr) {
                 if (obj.attr[key] !== null && obj.attr[key] !== undefined) {
                     el.setAttribute(key, String(obj.attr[key]));
                 }
@@ -51,16 +51,16 @@
             Object.assign(el.style, obj.style);
         }
 
-        var c = obj.children;
+        const c = obj.children;
 
         if (c && c instanceof Array && c.length) {
-            for (var i = 0; i < c.length; i++) {
-                var child = createElem(c[i]);
+            c.forEach(item => {
+                const child = createElem(item);
 
                 if (child) {
                     el.appendChild(child);
                 }
-            }
+            });
         } else if (c !== undefined && c !== null) {
             if (obj.html) {
                 el.innerHTML = String(c);
@@ -71,36 +71,36 @@
 
         return el;
     };
-    var zeroize = function zeroize(n) {
+    const zeroize = function zeroize(n) {
         if (n < 10) {
             return '0' + n;
         } else {
             return n.toString();
         }
     };
-    var fullDate = function fullDate(date) {
+    const fullDate = function fullDate(date) {
         return date.getFullYear() + '/' + zeroize(date.getMonth() + 1) + '/' + zeroize(date.getDate());
     };
-    var parseDate = function parseDate(s) {
+    const parseDate = function parseDate(s) {
         s = (s || '').replace(/-/g, '/');
-        var parsed = Date.parse(s);
+        const parsed = Date.parse(s);
         return new Date(parsed);
     };
-    var hhmm = function hhmm(date) {
+    const hhmm = function hhmm(date) {
         return zeroize(date.getHours()) + ':' + zeroize(date.getMinutes());
     };
-    var minuteToTimeStr = function minuteToTimeStr(minute) {
-        var h = parseInt(minute / 60),
+    const minuteToTimeStr = function minuteToTimeStr(minute) {
+        let h = parseInt(minute / 60),
             m = parseInt(minute % 60);
         if (h < 10) h = '0' + h;
         if (m < 10) m = '0' + m;
         return h + ':' + m;
     };
-    var timeStrToMinute = function timeStrToMinute(s) {
+    const timeStrToMinute = function timeStrToMinute(s) {
         s = s || '';
-        var arr = s.split(':');
-        var h = parseInt(arr[0]);
-        var m = parseInt(arr[1]);
+        const arr = s.split(':');
+        const h = parseInt(arr[0]);
+        const m = parseInt(arr[1]);
 
         if (!isNaN(h) && !isNaN(m)) {
             return h * 60 + m;
@@ -108,8 +108,8 @@
             return 0;
         }
     };
-    var closest = function closest(el, selector) {
-        var ans = el.parentElement;
+    const closest = function closest(el, selector) {
+        let ans = el.parentElement;
 
         while (ans && !ans.matches(selector)) {
             ans = ans.parentElement;
@@ -117,8 +117,8 @@
 
         return ans;
     };
-    var getDelegate = function getDelegate(e, selector) {
-        var el = e.target;
+    const getDelegate = function getDelegate(e, selector) {
+        let el = e.target;
 
         while (el && !el.matches(selector)) {
             if (el === e.currentTarget) {
@@ -132,21 +132,21 @@
         return el;
     }; // https://github.com/olahol/scrollparent.js/blob/master/scrollparent.js
 
-    var regex = /(auto|scroll)/;
+    const regex = /(auto|scroll)/;
 
-    var style = function style(node, prop) {
+    const style = function style(node, prop) {
         return getComputedStyle(node, null).getPropertyValue(prop);
     };
 
-    var overflow = function overflow(node) {
+    const overflow = function overflow(node) {
         return style(node, "overflow") + style(node, "overflow-y") + style(node, "overflow-x");
     };
 
-    var scroll = function scroll(node) {
+    const scroll = function scroll(node) {
         return regex.test(overflow(node));
     };
 
-    var findScrollParent = function findScrollParent(el) {
+    const findScrollParent = function findScrollParent(el) {
         var ans = el.parentElement;
 
         while (ans && !scroll(ans)) {
@@ -155,22 +155,22 @@
 
         return ans || document.scrollingElement || document.documentElement;
     };
-    var getFixRect = function getFixRect(el) {
+    const getFixRect = function getFixRect(el) {
         return el.getBoundingClientRect();
     };
-    var getRect = function getRect(el, scroll) {
+    const getRect = function getRect(el, scroll) {
         scroll = scroll || findScrollParent(el);
-        var rect = el.getBoundingClientRect().toJSON();
+        const rect = el.getBoundingClientRect().toJSON();
         rect.top += scroll.scrollTop;
         rect.bottom += scroll.scrollTop;
         rect.left += scroll.scrollLeft;
         rect.right += scroll.scrollLeft;
         return rect;
     };
-    var getOffset = function getOffset(el, parent) {
+    const getOffset = function getOffset(el, parent) {
         parent = parent || el.parentElement;
-        var rect1 = getFixRect(el);
-        var rect2 = getFixRect(parent);
+        const rect1 = getFixRect(el);
+        const rect2 = getFixRect(parent);
         return {
             top: rect1.top - rect2.top,
             left: rect1.left - rect2.left,
@@ -178,8 +178,8 @@
             height: rect1.height
         };
     };
-    var dispatchEvent = function dispatchEvent(element, type, data) {
-        var event; // Event and CustomEvent on IE9-11 are global objects, not constructors
+    const dispatchEvent = function dispatchEvent(element, type, data) {
+        let event; // Event and CustomEvent on IE9-11 are global objects, not constructors
 
         if (typeof Event === 'function' && typeof CustomEvent === 'function') {
             event = new CustomEvent(type, {
@@ -194,15 +194,15 @@
 
         return element.dispatchEvent(event);
     };
-    var hasProp = function hasProp(obj, p) {
+    const hasProp = function hasProp(obj, p) {
         return Object.prototype.hasOwnProperty.call(obj, p);
     };
-    var includesAny = function includesAny(arr1, arr2) {
+    const includesAny = function includesAny(arr1, arr2) {
         if (!Array.isArray(arr1) || !arr1.length) {
             return false;
         }
 
-        var pool = [];
+        let pool = [];
 
         if (Array.isArray(arr2)) {
             pool = arr2;
@@ -210,7 +210,7 @@
             pool.push(arr2);
         }
 
-        for (var i = 0; i < pool.length; i++) {
+        for (let i = 0; i < pool.length; i++) {
             if (arr1.indexOf(pool[i]) > -1) {
                 return true;
             }
@@ -219,7 +219,7 @@
         return false;
     };
 
-    var DEFAULTS = {
+    const DEFAULTS = {
         startDate: new Date(),
         num: 7,
         dayStart: 6,
@@ -249,19 +249,19 @@
         listForCols: null,
     };
 
-    var CELL_HEIGHT = 20; // px
+    const CELL_HEIGHT = 20; // px
 
-    var MOVE_X_THRESHOLD = 40; // px
+    const MOVE_X_THRESHOLD = 40; // px
 
-    var EVENT = {
+    const EVENT = {
         create: 'create',
         modify: 'modify',
         remove: 'remove'
     };
-    var TOUCH_DELAY = 500; // ms
+    const TOUCH_DELAY = 500; // ms
 
-    var timeoutRef = null;
-    var privates = {
+    let timeoutRef = null;
+    const privates = {
         _genDates: function _genDates(update) {
             if (this.config.listForCols) {
                 this.dates = this.config.listForCols
@@ -270,9 +270,9 @@
                 return
             }
             this.dates = [];
-            var ite = new Date(this.config.startDate);
+            const ite = new Date(this.config.startDate);
 
-            for (var i = 0; i < this.config.num; i++) {
+            for (let i = 0; i < this.config.num; i++) {
                 this.dates.push(new Date(ite));
 
                 if (!update) {
@@ -285,9 +285,9 @@
             }
         },
         _genThead: function _genThead() {
-            var c = this.config;
-            var dates = this.dates;
-            var thead = {
+            const c = this.config;
+            const dates = this.dates;
+            const thead = {
                 tagName: 'THEAD',
                 props: {},
                 children: [{
@@ -298,7 +298,7 @@
                 }]
             };
 
-            for (var i = 0; i < dates.length; i++) {
+            for (let i = 0; i < dates.length; i++) {
                 thead.children[0].children.push({
                     tagName: 'TH',
                     children: [{
@@ -321,13 +321,13 @@
             return thead;
         },
         _renderOuter: function _renderOuter() {
-            var c = this.config;
-            var dates = this.dates; // thead for dates
+            const c = this.config;
+            const dates = this.dates; // thead for dates
 
-            var thead = this._genThead(); // left column
+            const thead = this._genThead(); // left column
 
 
-            var timeline = {
+            const timeline = {
                 tagName: 'TABLE',
                 className: 'time-line',
                 children: [{
@@ -335,11 +335,11 @@
                     children: []
                 }]
             };
-            var da = new Date();
+            const da = new Date();
             da.setHours(c.dayStart, 0, 0, 0);
-            var rows = Math.ceil((c.dayEnd - c.dayStart) * 60 / c.gap);
+            const rows = Math.ceil((c.dayEnd - c.dayStart) * 60 / c.gap);
 
-            for (var i = 0; i < rows; i++) {
+            for (let i = 0; i < rows; i++) {
                 timeline.children[0].children.push({
                     tagName: 'TR',
                     children: [{
@@ -354,7 +354,7 @@
             } // tbody
 
 
-            var tbody = {
+            const tbody = {
                 tagName: 'TBODY',
                 children: [{
                     tagName: 'TR',
@@ -366,27 +366,27 @@
                 }]
             };
 
-            for (var j = 0; j < dates.length; j++) {
+            dates.forEach(item => {
                 tbody.children[0].children.push({
                     tagName: 'TD',
                     className: 'day-col'
                 });
-            }
+            });
 
             this.el.root.appendChild(createElem(thead));
             this.el.root.appendChild(createElem(tbody));
         },
         _setGrid: function _setGrid(index, cols) {
             cols = cols || 1;
-            var c = this.config;
-            var rows = Math.ceil((c.dayEnd - c.dayStart) * 60 / c.gap);
-            var grid = this.el.dayGrids[index].querySelector('tbody');
-            var r = {
+            const c = this.config;
+            const rows = Math.ceil((c.dayEnd - c.dayStart) * 60 / c.gap);
+            const grid = this.el.dayGrids[index].querySelector('tbody');
+            const r = {
                 tagName: 'TR',
                 children: []
             };
 
-            for (var i = 0; i < cols; i++) {
+            for (let i = 0; i < cols; i++) {
                 r.children.push({
                     tagName: 'TD',
                     className: 'grid-cell'
@@ -395,13 +395,13 @@
 
             grid.innerHTML = '';
 
-            for (var _i = 0; _i < rows; _i++) {
+            for (let _i = 0; _i < rows; _i++) {
                 grid.appendChild(createElem(r));
             }
         },
         _renderInner: function _renderInner(index) {
-            var dayCols = this.el.dayCols;
-            var h = {
+            const dayCols = this.el.dayCols;
+            const h = {
                 tagName: 'DIV',
                 className: 'events-container',
                 attr: {
@@ -412,7 +412,7 @@
                     className: 'events-col'
                 }]
             };
-            var g = {
+            const g = {
                 tagName: 'TABLE',
                 className: 'day-grid',
                 children: [{
@@ -442,27 +442,27 @@
             }
         },
         _renderEvent: function _renderEvent(item) {
-            var c = this.config;
-            var index = item.dateIndex;
-            var top = (item.startm - c.dayStart * 60) / c.gap * CELL_HEIGHT;
-            var h = (item.endm - item.startm) / c.gap * CELL_HEIGHT;
-            var style = item.style && _typeof(item.style) === 'object' ? item.style : {};
-            var className = item.className ? String(item.className).trim() : '';
-            var attr = {
+            const c = this.config;
+            const index = item.dateIndex;
+            const top = (item.startm - c.dayStart * 60) / c.gap * CELL_HEIGHT;
+            const h = (item.endm - item.startm) / c.gap * CELL_HEIGHT;
+            const style = item.style && _typeof(item.style) === 'object' ? item.style : {};
+            const className = item.className ? String(item.className).trim() : '';
+            const attr = {
                 'data-startm': item.startm,
                 'data-endm': item.endm,
                 'data-nr': item.nr
             };
 
             if (c.extraDataset && Object.keys(c.extraDataset).length) {
-                for (var key in c.extraDataset) {
+                for (const key in c.extraDataset) {
                     if (!hasProp(attr, 'data-' + key) && hasProp(item, c.extraDataset[key])) {
                         attr['data-' + key] = item[c.extraDataset[key]];
                     }
                 }
             }
 
-            var elem = createElem({
+            const elem = createElem({
                 tagName: 'DIV',
                 className: 'event' + (className ? ' ' + className : ''),
                 style: Object.assign({}, style, {
@@ -497,13 +497,13 @@
         },
         _insertIntoDate: function _insertIntoDate(elem, index) {
             // get event-cols; try to insert into one of them; if fails, add one col
-            var allCon = this.el.eventsContainers;
-            var cols = allCon[index].children;
-            var inserted = false;
-            var nr = elem.dataset['nr'];
-            var item = this.events[index][nr];
+            const allCon = this.el.eventsContainers;
+            const cols = allCon[index].children;
+            let inserted = false;
+            const nr = elem.dataset['nr'];
+            const item = this.events[index][nr];
 
-            for (var i = 0; i < cols.length; i++) {
+            for (let i = 0; i < cols.length; i++) {
                 inserted = this._insertIntoCol(elem, cols[i]);
 
                 if (inserted) {
@@ -512,7 +512,7 @@
             }
 
             if (!inserted) {
-                var idx = this._addCol(index, item.group);
+                const idx = this._addCol(index, item.group);
 
                 this._insertIntoCol(elem, cols[idx]);
             }
@@ -520,14 +520,14 @@
             this._setGroupHeader(index);
         },
         _setGroupHeader: function _setGroupHeader(index) {
-            var _this = this;
+            const _this = this;
 
-            var c = this.config;
+            const c = this.config;
 
-            var getHeaderText = function getHeaderText(col) {
-                var ans = null;
+            const getHeaderText = function getHeaderText(col) {
+                let ans = null;
 
-                var item = _this.getEvent(col.children[0]);
+                const item = _this.getEvent(col.children[0]);
 
                 if (item) {
                     ans = item.group;
@@ -546,15 +546,15 @@
                 return ans;
             };
 
-            var tr = this.el.groupHeaders[index].querySelector('tr');
+            const tr = this.el.groupHeaders[index].querySelector('tr');
             tr.innerHTML = '';
 
             if (c.labelGroups) {
-                var cols = this.el.eventsContainers[index].children;
-                var colspan = 1;
-                var group = cols[0] && cols[0].dataset['group'];
-                var headerText = getHeaderText(cols[0]);
-                var thObj = {
+                const cols = this.el.eventsContainers[index].children;
+                let colspan = 1;
+                let group = cols[0] && cols[0].dataset['group'];
+                const headerText = getHeaderText(cols[0]);
+                const thObj = {
                     tagName: 'th',
                     style: {},
                     children: [{
@@ -567,14 +567,14 @@
                 };
 
                 if (cols.length > 1) {
-                    for (var i = 1; i < cols.length; i++) {
-                        var col = cols[i];
+                    for (let i = 1; i < cols.length; i++) {
+                        const col = cols[i];
 
                         if (col.dataset['group'] !== group) {
                             // new group
                             thObj.style.width = colspan / cols.length * 100 + '%';
 
-                            var _headerText2 = getHeaderText(cols[i - 1]);
+                            const _headerText2 = getHeaderText(cols[i - 1]);
 
                             thObj.children[0].children = _headerText2;
                             thObj.children[0].attr.title = _headerText2;
@@ -588,7 +588,7 @@
 
                     thObj.style.width = colspan / cols.length * 100 + '%';
 
-                    var _headerText = getHeaderText(cols[cols.length - 1]);
+                    const _headerText = getHeaderText(cols[cols.length - 1]);
 
                     thObj.children[0].children = _headerText;
                     thObj.children[0].attr.title = _headerText;
@@ -606,10 +606,10 @@
             }
         },
         _arrangeEvents: function _arrangeEvents(dateIndex) {
-            var con = this.el.eventsContainers[dateIndex];
-            var cols = con.children; // remove dataset['group'] / remove empty cols
+            const con = this.el.eventsContainers[dateIndex];
+            const cols = con.children; // remove dataset['group'] / remove empty cols
 
-            for (var i = 0; i < cols.length; i++) {
+            for (let i = 0; i < cols.length; i++) {
                 if (cols[i].childElementCount === 0) {
                     if (i === 0) {
                         cols[i].removeAttribute('data-group');
@@ -622,12 +622,12 @@
 
             if (cols.length > 1) {
                 // begin from col[1], for each event block inside, try to push the block left
-                for (var _i2 = 1; _i2 < cols.length; _i2++) {
-                    var blocks = cols[_i2].children;
+                for (let _i2 = 1; _i2 < cols.length; _i2++) {
+                    const blocks = cols[_i2].children;
 
-                    for (var j = 0; j < blocks.length; j++) {
-                        var inserted = false;
-                        var k = 0;
+                    for (let j = 0; j < blocks.length; j++) {
+                        let inserted = false;
+                        let k = 0;
 
                         while (!inserted && k < _i2) {
                             inserted = this._insertIntoCol(blocks[j], cols[k]);
@@ -642,7 +642,7 @@
 
 
                 if (cols.length > 1) {
-                    for (var _i3 = 0; _i3 < cols.length; _i3++) {
+                    for (let _i3 = 0; _i3 < cols.length; _i3++) {
                         if (cols[_i3].childElementCount === 0) {
                             con.removeChild(cols[_i3]);
                             _i3 -= 1;
@@ -656,17 +656,17 @@
             this._setGroupHeader(dateIndex);
         },
         _addCol: function _addCol(index, group) {
-            var col = createElem({
+            const col = createElem({
                 tagName: 'DIV',
                 className: 'events-col'
             });
-            var idx = -1;
-            var con = this.el.eventsContainers[index];
+            let idx = -1;
+            const con = this.el.eventsContainers[index];
 
             if (group !== undefined) {
                 group = String(group);
                 col.dataset['group'] = group;
-                var fellows = con.querySelectorAll('[data-group="' + group + '"]');
+                const fellows = con.querySelectorAll('[data-group="' + group + '"]');
 
                 if (fellows.length) {
                     fellows[fellows.length - 1].insertAdjacentElement('afterEnd', col);
@@ -685,16 +685,16 @@
             return idx;
         },
         _insertIntoCol: function _insertIntoCol(elem, col) {
-            var nr = elem.dataset['nr'];
-            var index = col.parentElement.dataset['index'];
-            var _item = this._events[index][nr];
-            var group = _item.group;
+            const nr = elem.dataset['nr'];
+            const index = col.parentElement.dataset['index'];
+            const _item = this._events[index][nr];
+            let group = _item.group;
 
             if (group !== undefined) {
                 group = String(group); // null will also be a valid group
             }
 
-            var s = _item.startm;
+            const s = _item.startm;
             var e = _item.endm;
             var items = col.children;
 
@@ -752,14 +752,14 @@
         }
     };
 
-    var publics = {
+    const publics = {
         addEvent: function addEvent(eventItem) {
-            var item = this._tsItem(eventItem);
+            const item = this._tsItem(eventItem);
 
             if (item) {
-                var i = 0;
-                var _pool = this._events[item.dateIndex];
-                var pool = this.events[item.dateIndex];
+                let i = 0;
+                const _pool = this._events[item.dateIndex];
+                const pool = this.events[item.dateIndex];
 
                 while (i < _pool.length && _pool[i].startm <= item.startm) {
                     i += 1;
@@ -787,13 +787,13 @@
         },
         updateEvent: function updateEvent(coords, modified) {
             var c = this.config;
-            var valid = Array.isArray(coords) && coords.length >= 2 && coords[0] >= 0 && coords[0] < c.num && coords[1] >= 0 && coords[1] < this.events[coords[0]].length;
+            const valid = Array.isArray(coords) && coords.length >= 2 && coords[0] >= 0 && coords[0] < c.num && coords[1] >= 0 && coords[1] < this.events[coords[0]].length;
 
-            var _modified = this._tsItem(modified);
+            const _modified = this._tsItem(modified);
 
             if (valid && _modified) {
-                var dateIndex = coords[0];
-                var nr = coords[1];
+                const dateIndex = coords[0];
+                const nr = coords[1];
 
                 if (_modified.dateIndex !== dateIndex) {
                     this.deleteEvent(coords);
@@ -804,9 +804,9 @@
                     _modified.nr = nr;
                     this.events[dateIndex][nr] = modified;
                     this._events[dateIndex][nr] = _modified;
-                    var block = this.el.eventsContainers[dateIndex].querySelector('[data-nr="' + nr + '"]');
+                    const block = this.el.eventsContainers[dateIndex].querySelector('[data-nr="' + nr + '"]');
 
-                    var top = this._minuteToTop(_modified.startm);
+                    const top = this._minuteToTop(_modified.startm);
 
                     if (block && top >= 0) {
                         Object.assign(block.style, {
@@ -824,14 +824,14 @@
             return this;
         },
         deleteEvent: function deleteEvent(coords) {
-            var c = this.config;
-            var valid = Array.isArray(coords) && coords.length >= 2 && coords[0] >= 0 && coords[0] < c.num && coords[1] >= 0 && coords[1] < this.events[coords[0]].length;
+            const c = this.config;
+            const valid = Array.isArray(coords) && coords.length >= 2 && coords[0] >= 0 && coords[0] < c.num && coords[1] >= 0 && coords[1] < this.events[coords[0]].length;
 
             if (valid) {
-                var dateIndex = coords[0];
-                var nr = coords[1];
-                var _pool = this._events[dateIndex];
-                var pool = this.events[dateIndex];
+                const dateIndex = coords[0];
+                const nr = coords[1];
+                const _pool = this._events[dateIndex];
+                const pool = this.events[dateIndex];
 
                 _pool.splice(nr, 1);
 
@@ -1006,8 +1006,9 @@
             return this;
         }
     };
-    var timeRegex = /^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/;
-    var helpers = {
+
+    const timeRegex = /^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/;
+    const helpers = {
         _posToMinute: function _posToMinute(elem, recalc) {
             if (!recalc && elem.dataset['startm'] && elem.dataset['endm']) {
                 return {
@@ -1075,14 +1076,14 @@
             valid &= eventItem.start && timeRegex.test(eventItem.start) && eventItem.end && timeRegex.test(eventItem.end);
 
             if (valid) {
-                var c = this.config;
-                var dayStartm = c.dayStart * 60;
-                var dayEndm = c.dayEnd * 60;
-                var parsedDate = parseDate(eventItem.date);
-                var ymd = fullDate(parsedDate);
-                var startm = timeStrToMinute(eventItem.start);
-                var endm = timeStrToMinute(eventItem.end);
-                var dateIndex = -1;
+                const c = this.config;
+                const dayStartm = c.dayStart * 60;
+                const dayEndm = c.dayEnd * 60;
+                const parsedDate = parseDate(eventItem.date);
+                const ymd = fullDate(parsedDate);
+                const startm = timeStrToMinute(eventItem.start);
+                const endm = timeStrToMinute(eventItem.end);
+                let dateIndex = -1;
 
                 if (this.config.listForCols) {
                     dateIndex = this.dates.indexOf(eventItem.date)
@@ -1190,32 +1191,32 @@
         }
     };
 
-    var touchStartEl = null;
-    var touchData = {
+    let touchStartEl = null;
+    const touchData = {
         startY: 0,
         startX: 0,
         yArr: [],
         xArr: [],
         timestamp: Date.now()
     };
-    var touchTO = null;
-    var drawing = null;
-    var modifying = null;
-    var modifyingH = 0;
-    var modifyingTop = 0;
-    var yTriggered = false;
-    var dragging = null;
-    var oPos;
-    var colLeft = [];
-    var dropIndex;
-    var bound = {
+    let touchTO = null;
+    let drawing = null;
+    let modifying = null;
+    let modifyingH = 0;
+    let modifyingTop = 0;
+    let yTriggered = false;
+    let dragging = null;
+    let oPos;
+    let colLeft = [];
+    let dropIndex;
+    let bound = {
         top: -Infinity,
         right: Infinity,
         bottom: Infinity,
         left: -Infinity
     };
 
-    var autoScroll = function () {
+    const autoScroll = function () {
         var scrollInt = {
             h: null,
             v: null
@@ -1309,7 +1310,7 @@
         };
     }();
 
-    var land = function land() {
+    const land = function land() {
         touchData.startY = 0;
         touchData.yArr = [];
         touchData.startX = 0;
@@ -1330,7 +1331,7 @@
         };
     };
 
-    var getXY = function getXY(e) {
+    const getXY = function getXY(e) {
         if (/mouse/.test(e.type)) {
             return {
                 x: e.clientX,
@@ -1344,24 +1345,24 @@
         }
     };
 
-    var preventClick = function preventClick(e) {
+    const preventClick = function preventClick(e) {
         e.stopImmediatePropagation();
     };
 
-    var preventContextMenu = function preventContextMenu(e) {
+    const preventContextMenu = function preventContextMenu(e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
     };
 
-    var scrollDetector = function scrollDetector() {
+    const scrollDetector = function scrollDetector() {
         // TODO: if no scroll container provided, <html> is chosen, which doesn't seem to response to scroll event
         // may be auto add a scroll container?
         clearTimeout(touchTO);
         touchTO = null;
     };
 
-    var handlers = {
+    const handlers = {
         touchstart: function touchstart(e) {
             var c = this.config;
             var xy = getXY(e);
@@ -1746,12 +1747,12 @@
                 modifying.classList.remove('drawing');
 
                 if (Math.abs(modifying.offsetHeight - modifyingH) > 0) {
-                    var _se = this._posToMinute(modifying, true);
+                    const _se = this._posToMinute(modifying, true);
 
-                    var coords = this._getEventCoords(modifying);
+                    const coords = this._getEventCoords(modifying);
 
-                    var _item2 = this.events[coords[0]][coords[1]];
-                    var mod = {
+                    const _item2 = this.events[coords[0]][coords[1]];
+                    const mod = {
                         type: 'end',
                         date: _item2.date,
                         start: _item2.start,
@@ -1792,7 +1793,7 @@
             } else if (touchStartEl.classList.contains('event')) {
                 if (dragging && modifying) {
                     if (dropIndex > -1) {
-                        var top = Math.round(parseFloat(dragging.style.top) + this.el.scroll.scrollTop - this._coords.grid.top);
+                        let top = Math.round(parseFloat(dragging.style.top) + this.el.scroll.scrollTop - this._coords.grid.top);
                         top = Math.max(top, 0);
                         top = Math.min(top, (c.dayEnd - c.dayStart) * 60 / c.gap * CELL_HEIGHT - modifyingH);
 
@@ -1800,15 +1801,15 @@
                             top = this._quantizeTop(top);
                         }
 
-                        var startm = c.dayStart * 60 + top / CELL_HEIGHT * c.gap;
-                        var endm = startm + Math.round(modifyingH / CELL_HEIGHT * c.gap);
+                        const startm = c.dayStart * 60 + top / CELL_HEIGHT * c.gap;
+                        const endm = startm + Math.round(modifyingH / CELL_HEIGHT * c.gap);
 
-                        var _coords = this._getEventCoords(modifying);
+                        const _coords = this._getEventCoords(modifying);
 
-                        var _item3 = this.events[_coords[0]][_coords[1]];
-                        var _item = this._events[_coords[0]][_coords[1]];
-                        var type = startm == _item.startm ? 'date' : 'datetime';
-                        var _mod = {
+                        const _item3 = this.events[_coords[0]][_coords[1]];
+                        const _item = this._events[_coords[0]][_coords[1]];
+                        const type = startm == _item.startm ? 'date' : 'datetime';
+                        const _mod = {
                             type: type,
                             date: fullDate(this.dates[dropIndex]),
                             start: minuteToTimeStr(startm),
@@ -1839,19 +1840,19 @@
                         col.classList.remove('drop-target');
                     });
                 } else if (modifying) {
-                    var offset = getOffset(modifying);
+                    const offset = getOffset(modifying);
 
                     if (Math.abs(offset.top - modifyingTop) > 0) {
                         if (modifying.style.position === 'fixed') {
                             // been scrolling, restore to absolute position, update top
-                            var dv = autoScroll.reset.call(this, 'v').v;
+                            const dv = autoScroll.reset.call(this, 'v').v;
                             Object.assign(modifying.style, {
                                 position: '',
                                 left: '',
                                 width: ''
                             });
 
-                            var _top2;
+                            let _top2;
 
                             if (lastY <= bound.top) {
                                 _top2 = modifyingTop - (touchData.startY - bound.top) + dv;
@@ -1869,12 +1870,12 @@
                             modifying.style.top = _top2 + 'px';
                         }
 
-                        var _se2 = this._posToMinute(modifying, true);
+                        const _se2 = this._posToMinute(modifying, true);
 
-                        var _coords2 = this._getEventCoords(modifying);
+                        const _coords2 = this._getEventCoords(modifying);
 
-                        var _item4 = this.events[_coords2[0]][_coords2[1]];
-                        var _mod2 = {
+                        const _item4 = this.events[_coords2[0]][_coords2[1]];
+                        const _mod2 = {
                             type: 'start',
                             date: _item4.date,
                             start: minuteToTimeStr(_se2.startm),
@@ -1950,7 +1951,7 @@
         }
     };
 
-    var events = {
+    const events = {
         _bind: function _bind() {
             for (var key in handlers) {
                 this._handlers[key] = handlers[key].bind(this);
@@ -1967,7 +1968,7 @@
         }
     };
 
-    var TableSchedule = function TableSchedule(el, config) {
+    const TableSchedule = function TableSchedule(el, config) {
         var elem;
 
         if (typeof el === 'string') {
@@ -1981,7 +1982,6 @@
         }
 
         this.config = Object.assign({}, DEFAULTS, config);
-        this.dates = [];
         this.el = {
             root: elem,
             dayCols: elem.getElementsByClassName('day-col'),
@@ -2018,6 +2018,7 @@
             scroll: getRect(this.el.scroll)
         };
     };
+
     TableSchedule.prototype._init = function () {
         this.el.root.classList.add('table-schedule');
 
