@@ -1721,10 +1721,10 @@
 
                 if (se.endm - se.startm >= c.createThreshold) {
                     let date
+                    const index = parseInt(touchStartEl.parentElement.dataset['index']);
                     if (this.config.listForCols) {
-                        date = new Date()
+                        date = this.dates[index]
                     } else {
-                        const index = parseInt(touchStartEl.parentElement.dataset['index']);
                         date = fullDate(this.dates[index]);
                     }
                     const item = {
