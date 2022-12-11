@@ -244,8 +244,9 @@
         // add extra dataset entries to event element, e.g. {id: 'ID'} will add 'data-id' with value from eventItem.ID
         labelGroups: false,
         // whether show group header
-        groupHeaderText: null // default using item.group | a key from item object | a function which takes item.group
+        groupHeaderText: null, // default using item.group | a key from item object | a function which takes item.group
 
+        listForCols: null,
     };
 
     var CELL_HEIGHT = 20; // px
@@ -262,6 +263,12 @@
     var timeoutRef = null;
     var privates = {
         _genDates: function _genDates(update) {
+            if (this.config.listForCols) {
+                this.dates = this.config.listForCols
+                this.dates.forEach(_ => this.events.push([]))
+                this.dates.forEach(_ => this._events.push([]))
+                return
+            }
             this.dates = [];
             var ite = new Date(this.config.startDate);
 
@@ -1059,8 +1066,12 @@
                 return null;
             }
 
-            var valid = true;
-            valid &= eventItem.date && parseDate(eventItem.date).toString() !== 'Invalid Date';
+            let valid = true;
+            if (this.config.listForCols) {
+                valid &= this.config.listForCols.includes(eventItem.date)
+            } else {
+                valid &= eventItem.date && parseDate(eventItem.date).toString() !== 'Invalid Date';
+            }
             valid &= eventItem.start && timeRegex.test(eventItem.start) && eventItem.end && timeRegex.test(eventItem.end);
 
             if (valid) {
@@ -1073,10 +1084,14 @@
                 var endm = timeStrToMinute(eventItem.end);
                 var dateIndex = -1;
 
-                for (var i = 0; i < this.dates.length; i++) {
-                    if (ymd === fullDate(this.dates[i])) {
-                        dateIndex = i;
-                        break;
+                if (this.config.listForCols) {
+                    dateIndex = this.dates.indexOf(eventItem.date)
+                } else {
+                    for (let i = 0; i < this.dates.length; i++) {
+                        if (ymd === fullDate(this.dates[i])) {
+                            dateIndex = i;
+                            break;
+                        }
                     }
                 }
 
@@ -1704,9 +1719,14 @@
                 touchStartEl.removeChild(drawing);
 
                 if (se.endm - se.startm >= c.createThreshold) {
-                    var index = parseInt(touchStartEl.parentElement.dataset['index']);
-                    var date = fullDate(this.dates[index]);
-                    var item = {
+                    let date
+                    if (this.config.listForCols) {
+                        date = new Date()
+                    } else {
+                        const index = parseInt(touchStartEl.parentElement.dataset['index']);
+                        date = fullDate(this.dates[index]);
+                    }
+                    const item = {
                         date: date,
                         start: minuteToTimeStr(se.startm),
                         end: minuteToTimeStr(se.endm)
