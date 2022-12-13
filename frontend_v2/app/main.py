@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from fastapi import FastAPI, Path
+from fastapi import FastAPI
 from fastapi.requests import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates

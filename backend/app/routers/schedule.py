@@ -11,12 +11,9 @@ from ..models.tortoise_models import Line, Frequency
 router = APIRouter()
 
 
-async def check_time(existing_lines: QuerySet[Line], line: LineIn_Pydantic | LinePeriodicIn_Pydantic):
+async def check_time(existing_lines: QuerySet[Line], line: LineIn_Pydantic | LinePeriodicIn_Pydantic) -> str | None:
     if line.start > line.end:
-        return JSONResponse(
-            status_code=422,
-            content={'detail': f'End time must be greater than start'}
-        )
+        return f'End time must be greater than start'
     async for existing_line in existing_lines:
         if not (existing_line.start.replace(tzinfo=None) > line.end or
                 existing_line.end.replace(tzinfo=None) < line.start):
@@ -30,20 +27,8 @@ async def check_time(existing_lines: QuerySet[Line], line: LineIn_Pydantic | Lin
                 c = await query.count()
                 if c == 1:
                     continue
-                return JSONResponse(
-                    status_code=422,
-                    content={
-                        'detail':
-                            f'overlapping time with schedule line(ids={await query.values_list("id", flat=True)})',
-                    }
-                )
-            return JSONResponse(
-                status_code=422,
-                content={
-                    'detail':
-                        f'overlapping time with schedule line(id={existing_line.id})',
-                }
-            )
+                return f'overlapping time with schedule line(ids={await query.values_list("id", flat=True)})'
+            return f'overlapping time with schedule line(id={existing_line.id})'
 
 
 @router.post("/", response_model=list[Line_Pydantic],
@@ -89,13 +74,13 @@ async def create_schedule(line: LineIn_Pydantic):
 
 @router.post("/create_periodic", response_model=Line_Pydantic)
 async def create_schedule(line: LinePeriodicIn_Pydantic):
-    valid = await check_time(Line.filter(classroom_id=line.classroom_id,
+    error = await check_time(Line.filter(classroom_id=line.classroom_id,
                                          weekday=line.weekday,
                                          week_type__in=(line.week_type, 0),
                                          period=1),
                              line)
-    if isinstance(valid, Response):
-        return valid
+    if error is None:
+        return JSONResponse(status_code=422, content={'detail': error, })
     l = await Line.create(**line.dict())
 
     await l.fetch_related('group', 'teacher', 'classroom')
