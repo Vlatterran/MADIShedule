@@ -5,6 +5,6 @@ aiofiles~=0.8.0
 dpath~=2.0.6
 aiosqlite~=0.17.0
 prometheus_fastapi_instrumentator~=5.9.1
-
+uvloop~=0.17.0
 #implicit
 orjson~=3.8.0 # for fastapi.responses.ORJSONRespone
