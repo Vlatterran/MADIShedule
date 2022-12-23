@@ -1,8 +1,9 @@
 import datetime
 
 from fastapi import Query
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from tortoise.expressions import RawSQL
 from tortoise.queryset import QuerySet
 
 from ..models.pydantic_models import Line_Pydantic, LineIn_Pydantic, LinePeriodicIn_Pydantic
@@ -12,18 +13,17 @@ router = APIRouter()
 
 
 async def check_time(existing_lines: QuerySet[Line], line: LineIn_Pydantic | LinePeriodicIn_Pydantic) -> str | None:
-    if line.start > line.end:
+    if line.start_time > line.end_time:
         return f'End time must be greater than start'
     async for existing_line in existing_lines:
-        if not (existing_line.start.replace(tzinfo=None) > line.end or
-                existing_line.end.replace(tzinfo=None) < line.start):
-            if existing_line.period == line.period == Frequency.MONTH:
-                query = Line.filter(classroom=line.classroom_id,
+        if not (existing_line.start_time.replace(tzinfo=None) > line.end_time or
+                existing_line.end_time.replace(tzinfo=None) < line.start_time):
+            if hasattr(line, 'period') and existing_line.period == line.period == Frequency.MONTH:
+                query = Line.filter(RawSQL(f"overlaps(start_time, end_time, {line.start_time}, {line.end_time})"),
+                                    classroom=line.classroom_id,
                                     week_type=line.week_type,
                                     weekday=line.weekday,
-                                    period=Frequency.MONTH,
-                                    start__startswith=line.start,
-                                    end__startswith=line.end)
+                                    period=Frequency.MONTH)
                 c = await query.count()
                 if c == 1:
                     continue
@@ -63,9 +63,9 @@ async def get_by_id(id: int):
 
 @router.post("/create_non_periodic", response_model=Line_Pydantic)
 async def create_schedule(line: LineIn_Pydantic):
-    valid = await check_time(Line.get_by_date(line.date).filter(classroom_id=line.classroom_id), line)
-    if isinstance(valid, Response):
-        return valid
+    error = await check_time(Line.get_by_date(line.date).filter(classroom_id=line.classroom_id), line)
+    if error is not None:
+        return JSONResponse(status_code=422, content={'detail': error})
     l = await Line.create(**line.dict())
 
     await l.fetch_related('group', 'teacher', 'classroom')
@@ -79,8 +79,8 @@ async def create_schedule(line: LinePeriodicIn_Pydantic):
                                          week_type__in=(line.week_type, 0),
                                          period=1),
                              line)
-    if error is None:
-        return JSONResponse(status_code=422, content={'detail': error, })
+    if error is not None:
+        return JSONResponse(status_code=422, content={'detail': error})
     l = await Line.create(**line.dict())
 
     await l.fetch_related('group', 'teacher', 'classroom')
@@ -90,9 +90,12 @@ async def create_schedule(line: LinePeriodicIn_Pydantic):
 @router.post('/{id}/specify_date')
 async def specify(id: int, date: datetime.date = Query(example=datetime.date.fromisoformat('2022-10-05'))):
     line = await Line.get(id=id).prefetch_related()
-    return Line_Pydantic.from_orm(
-        await Line.create(**Line_Pydantic.from_orm(line).dict() | dict(date=date, origin=line)))
+    params = (Line_Pydantic.from_orm(line).dict() | dict(date=date, origin=line))
+    params.pop('id')
+    return Line_Pydantic.from_orm(await Line.create(**params))
 
+
+@router.p
 
 @router.delete('/{id}')
 async def delete_schedule(id: int):
