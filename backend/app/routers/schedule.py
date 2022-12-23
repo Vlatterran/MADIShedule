@@ -95,8 +95,6 @@ async def specify(id: int, date: datetime.date = Query(example=datetime.date.fro
     return Line_Pydantic.from_orm(await Line.create(**params))
 
 
-@router.p
-
 @router.delete('/{id}')
 async def delete_schedule(id: int):
     await Line.filter(id=id).delete()
