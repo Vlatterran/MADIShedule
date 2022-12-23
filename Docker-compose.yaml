@@ -3,7 +3,7 @@ services:
     build: backend
     container_name: api
     ports:
-      - 8008:80
+      - 8008:8080
     environment:
       - DATABASE_URL=asyncpg://fastapi:fastapi@db:5432/schedule
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8080 --loop uvloop
@@ -16,7 +16,7 @@ services:
     build: frontend_v2
     container_name: front
     ports:
-      - 8009:80
+      - 8009:8080
     environment:
       - API_URL=http://api:8000
     command: uvicorn frontend.main:app --host 0.0.0.0 --port 8080
