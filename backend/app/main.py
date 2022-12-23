@@ -1,9 +1,9 @@
 import asyncio
+import logging
 import os
 import sys
 from pathlib import Path
 
-import aiofiles
 import starlette.routing
 import tortoise.exceptions
 from fastapi import FastAPI
@@ -11,10 +11,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from tortoise import connections
+from tortoise.backends.sqlite import SqliteClient
 from tortoise.contrib.fastapi import register_tortoise
 
 from .models import tortoise_models
 from .routers import teachers, classrooms, schedule, groups
+from .utils import is_overlapping, run_sql_script
 
 app = FastAPI(
     title=os.environ.get('TITLE', 'ASU MADI schedule API'),
@@ -23,7 +25,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://localhost:8009"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -75,24 +77,25 @@ async def add_unique_constraint():
     while True:
         try:
             conn = connections.get('default')
-            await asyncio.sleep(0.2)
+            logging.info('Database connections established')
+            await asyncio.sleep(2)
+            logging.debug(conn.capabilities.dialect)
             break
         except tortoise.exceptions.ConfigurationError:
-            await asyncio.sleep(0.1)
-    ap = Path(__file__)
+            logging.exception('can not establish connection to database')
+            await asyncio.sleep(1)
 
-    async def run_sql_script(path: Path):
-        async with aiofiles.open(path, 'r', encoding='utf8') as f:
-            await conn.execute_query(await f.read())
-
-    while True:
-        try:
-            await asyncio.gather(*(run_sql_script(script_name)
-                                   for script_name
-                                   in ap.parent.joinpath('models/sql/sqlite').glob('**/*')))
-            break
-        except tortoise.exceptions.OperationalError:
-            await asyncio.sleep(0.1)
+    try:
+        if isinstance(conn, SqliteClient):
+            await conn._connection.create_function('is_overlapping', 4, is_overlapping)
+        await asyncio.gather(*(run_sql_script(conn, script_name)
+                               for script_name
+                               in Path(__file__).parent.joinpath(f'models/sql/{conn.capabilities.dialect}')
+                             .glob('**/*')))
+    except tortoise.exceptions.OperationalError:
+        logging.exception('can not execute sql script')
+    except FileNotFoundError:
+        logging.info('No SQL scripts for this dialect found')
 
 
 @app.get('/', response_class=RedirectResponse, include_in_schema=False)
