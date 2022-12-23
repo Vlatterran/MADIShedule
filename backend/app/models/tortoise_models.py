@@ -46,6 +46,8 @@ class LectureType(enum.Enum):
     LECTURE = 'лекции'
     PRACTICE = 'практические занятия /семинар/'
     LAB = 'лабораторные занятия'
+    EXAM = 'экзамен'
+    CONSULT = 'консультация'
 
 
 class Group(Model):
@@ -84,8 +86,8 @@ class Weekday(enum.IntEnum):
 
 class Line(Model):
     name: str = fields.TextField(null=True)
-    start: datetime.time = fields.TimeField()
-    end: datetime.time = fields.TimeField()
+    start_time: datetime.time = fields.TimeField()
+    end_time: datetime.time = fields.TimeField()
     type: LectureType = fields.CharEnumField(LectureType)
     teacher = fields.ForeignKeyField('model.Teacher', null=True)
     group = fields.ForeignKeyField('model.Group')
@@ -100,7 +102,7 @@ class Line(Model):
     period: Frequency = fields.IntEnumField(Frequency, null=True)
 
     def __str__(self):
-        return f'{self.name} {self.start}-{self.end} {self.group}' \
+        return f'{self.name} {self.start_time}-{self.end_time} {self.group}' \
                f' {self.teacher} {self.classroom} {self.date} {self.period}'
 
     @classmethod
@@ -112,7 +114,7 @@ class Line(Model):
 
     class Meta:
         unique_together = (
-            ('start', 'end', 'classroom', 'date'),
+            ('start_time', 'end_time', 'classroom', 'date'),
         )
 
 

@@ -12,8 +12,8 @@ class Line_Pydantic(PydanticModel):
     id: int
     name: str | None
     date: datetime.date | None
-    start: datetime.time
-    end: datetime.time
+    start_time: datetime.time
+    end_time: datetime.time
     teacher_id: str | None
     group_id: str
     classroom_id: str
@@ -30,8 +30,8 @@ class Line_Pydantic(PydanticModel):
                 "id": 121,
                 "name": "Информатика",
                 "date": None,
-                "start": "15:35:00+00:00",
-                "end": "17:05:00+00:00",
+                "start_time": "15:35:00+00:00",
+                "end_time": "17:05:00+00:00",
                 "teacher_id": "Голубкова В.Б.",
                 "group_id": "1бАСУ2",
                 "classroom_id": "617л",
@@ -43,8 +43,8 @@ class Line_Pydantic(PydanticModel):
                 {"id": 121,
                  "name": "Информатика",
                  "date": datetime.date.today(),
-                 "start": "15:35:00+00:00",
-                 "end": "17:05:00+00:00",
+                 "start_time": "15:35:00+00:00",
+                 "end_time": "17:05:00+00:00",
                  "teacher_id": "Голубкова В.Б.",
                  "group_id": "1бАСУ2",
                  "classroom_id": "617л",
@@ -62,8 +62,8 @@ class LineIn_Pydantic(PydanticModel):
     """
     name: str | None
     date: datetime.date
-    start: datetime.time
-    end: datetime.time
+    start_time: datetime.time
+    end_time: datetime.time
     teacher_id: str | None
     group_id: str
     classroom_id: str
@@ -76,8 +76,8 @@ class LineIn_Pydantic(PydanticModel):
             'example':
                 {
                     'name': 'IT',
-                    'start': '10:00',
-                    'end': '11:30',
+                    'start_time': '10:00',
+                    'end_time': '11:30',
                     'date': '2022-10-05',
                     'type': 'лекции',
                     'classroom_id': '605л',
@@ -93,8 +93,8 @@ class LinePeriodicIn_Pydantic(PydanticModel):
     Schema of incoming schedule line that repeats
     """
     name: str | None
-    start: datetime.time
-    end: datetime.time
+    start_time: datetime.time
+    end_time: datetime.time
     teacher_id: str | None
     group_id: str
     classroom_id: str
@@ -111,8 +111,8 @@ class LinePeriodicIn_Pydantic(PydanticModel):
             'example':
                 {
                     'name': 'IT',
-                    'start': '10:00',
-                    'end': '11:30',
+                    'start_time': '10:00',
+                    'end_time': '11:30',
                     'week_type': 0,
                     'weekday': 1,
                     'period': 1,
