@@ -28,7 +28,7 @@
 
     /*  Установаем ширину окна  */
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
 
     /*  Центрируем и задаем z-index */
     position: fixed;
@@ -58,20 +58,65 @@
     cursor: pointer;
 }
 
+.text-field__label {
+    display: block;
+    margin-top: 10px;
+    width: -webkit-fill-available;
+    border: 1px solid black;
+    border-radius: 5px;
+    height: 30px;
+    font-size: 16px;
+    padding: 0 10px;
+    margin-bottom: 10px;
 
-/* Стили для кнопок. Мы ведь порядочные разработчики, негоже простые ссылки оставлять */
+}
 
-a {
-    padding: 20px;
-    display: inline-block;
-    text-decoration: none;
-    background-color: #414b52;
-    margin: 10px;
+.modal-size {
+    font-size: 20px;
+}
+
+.text_size {
+    font-size: 20px;
+    margin: 0;
+    text-align: left;
+}
+
+.btn {
+    width: -webkit-fill-available;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 10px;
     color: #fff;
-    border-radius: 3px;
+    border: 1px solid black;
+    background-color: #6cbaff;
+}
+
+.del {
+    background-color: #d92844;
 }
 
 .modal.active, .overlay.active {
     opacity: 1;
     visibility: visible;
+}
+
+.event[data-type="лекции"]{
+    background-color: #4caf50;
+    border-color: #2d682f;
+}
+
+.event[data-type="консультация"]{
+    background-color: #ff9800;
+    border-color: #995b00;
+}
+
+.event[data-type="лабораторные занятия"]{
+    background-color: #ff68c3;
+    border-color: #ff02af;
+}
+
+.event[data-type="экзамен"]{
+    background-color: #ffeb3b;
+    border-color: #d4be00;
 }

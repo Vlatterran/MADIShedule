@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="modal" data-modal="1">
+   <!--   Svg иконка для закрытия окна  -->
+   <svg class="modal__cross" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.954 21.03l-9.184-9.095 9.092-9.174-2.832-2.807-9.09 9.179-9.176-9.088-2.81 2.81 9.186 9.105-9.095 9.184 2.81 2.81 9.112-9.192 9.18 9.1z"/></svg>
+   <p class="modal__title modal-size">Занять кабинет</p>
+    <form>
+        <label id="start">
+            <p class='text_size'>Начало</p>
+            <input class='text-field__label' type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required name="start">
+        </label>
+
+        <label id="end">
+            <p class='text_size'>Конец</p>
+            <input class='text-field__label' type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required name="end">
+        </label>
+
+        <label id="classroom">
+            <p class='text_size'>Кабинет</p>
+            <input class='text-field__label' type="text" required name="classroom_id" readonly>
+        </label>
+
+        <label id="group" >
+            <p class='text_size'>Группа</p>
+            <input class='text-field__label' type="text" name="group_id" required>
+        </label>
+
+        <label id="teacher">
+            <p class='text_size'>Преподаватель</p>
+            <input class='text-field__label' type="text" name="teacher_id">
+        </label>
+
+        <label>
+            <p class='text_size'>Название</p>
+            <input class='text-field__label' type="text" name="name" required>
+        </label>
+
+        <label>
+            <input type="text" name="date" value="{{ date }}" required hidden="hidden">
+        </label>
+
+        <label id="'type">
+            <p class='text_size'>Тип</p>
+            <input class='text-field__label' list="types" name="type">
+            <datalist id="types">
+                <option value="Лекция">
+                <option value="Лаба">
+                <option value="Семинар">
+            </datalist>
+        </label>
+
+        <button class="submit btn">Занять</button>
+    </form>
+
+</div>
+
+<!-- Подложка под модальным окном -->
+<div class="overlay" id="overlay-modal"></div>
+</body>
+</html>

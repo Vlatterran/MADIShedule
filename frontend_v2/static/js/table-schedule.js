@@ -1431,7 +1431,7 @@
                 var _this = this;
 
                 if (el === e.target) {
-                    // start drawing only when touch on .events-col
+                    // start_time drawing only when touch on .events-col
                     common();
 
                     var starter = function starter() {
@@ -1993,8 +1993,8 @@
         /**
          * event {
          *      date, *
-         *      start, *
-         *      end, *
+         *      start_time, *
+         *      end_time, *
          *      title,
          *      content,
          *

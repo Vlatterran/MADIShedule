@@ -18,6 +18,9 @@ const open_form = (e) => {
     classroomInput.prop("readonly", false);
     classroomInput[0].value = item.date;
     classroomInput.prop("readonly", true);
+    $('#teacher>input')[0].value = item.start;
+    $('#name>input')[0].value = '';
+    $('#group>input')[0].value = '';
 }
 
 $('.submit').click((e) => {
@@ -32,7 +35,12 @@ $('.submit').click((e) => {
         method: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
-        success: console.log
+        success: data => {
+            addEvent(data)
+
+            modalElem.removeClass('active');
+            overlay.removeClass('active');
+        }
     })
 })
 
