@@ -6,7 +6,7 @@ services:
       - 8008:80
     environment:
       - DATABASE_URL=asyncpg://fastapi:fastapi@db:5432/schedule
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 80 --loop uvloop
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8080 --loop uvloop
     networks:
       - app_network
     depends_on:
@@ -19,7 +19,7 @@ services:
       - 8009:80
     environment:
       - API_URL=http://api:8000
-    command: uvicorn frontend.main:app --host 0.0.0.0 --port 80
+    command: uvicorn frontend.main:app --host 0.0.0.0 --port 8080
     networks:
       - app_network
 
@@ -27,7 +27,7 @@ services:
 #    build: dataloader
 #    command: python dataloader.py
 #    environment:
-#      - URL=http://api
+#      - URL=http://api:8080
 #    depends_on:
 #      - backend
 #    networks:

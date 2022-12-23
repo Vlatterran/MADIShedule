@@ -8,5 +8,5 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - 'api'
-          - 'front'
+          - api:8080
+          - front:8080
