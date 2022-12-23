@@ -6,11 +6,19 @@
     <script>document.getElementsByTagName("html")[0].className += " js";</script>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/table-schedule.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-    <title>Расписание аудиторий ({{ date }})</title>
+    <title>Расписание аудиторий ({{ '.'.join(date.split('-')[::-1]) }})</title>
 </head>
 <body>
 <header class="cd-main-header text-center flex flex-column flex-center">
-    <h1 class="text-xl">Расписание аудиторий на {{ date }}</h1>
+    <h1 class="text-xl">Расписание аудиторий на {{ '.'.join(date.split('-')[::-1]) }}
+        <br>
+        <form action="/" method="get">
+            <label>
+                <input name="date" type="date" value="{{ date }}">
+            </label>
+            <button type="submit">Прейти</button>
+        </form>
+    </h1>
 </header>
 <div style="overflow:auto">
     <table class="table-schedule">
@@ -30,12 +38,14 @@
     <form>
         <label id="start">
             <p class='text_size'>Начало</p>
-            <input class='text-field__label' type="time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required name="start_time">
+            <input class='text-field__label' type="time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required
+                   name="start_time">
         </label>
 
         <label id="end">
             <p class='text_size'>Конец</p>
-            <input class='text-field__label' type="time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required name="end_time">
+            <input class='text-field__label' type="time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required
+                   name="end_time">
         </label>
 
         <label id="classroom">
@@ -84,7 +94,7 @@
         </label>
 
         <button class="submit btn">Сохранить</button>
-{#        <button class="submit btn del">Удалить</button>#}
+        {#        <button class="submit btn del">Удалить</button>#}
     </form>
 </div>
 
