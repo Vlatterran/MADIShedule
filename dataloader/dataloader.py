@@ -3,6 +3,7 @@ import http
 import json
 import os
 from pprint import pprint
+from typing import Iterable
 
 import httpx
 from bs4 import BeautifulSoup
@@ -57,26 +58,25 @@ async def main():
         groups = set()
         classrooms = set()
         schedule = []
-        # t1 = parse(classrooms, groups, teachers, schedule, client)
-        t2 = parse2(classrooms, groups, teachers, schedule, client, 2, 'лабораторные занятия')
-        t3 = parse2(classrooms, groups, teachers, schedule, client, 3, 'практические занятия /семинар/')
         await asyncio.gather(
-            # t1,
-            t2,
-            t3
+            # parse(classrooms, groups, teachers, schedule, client),
+            parse2(classrooms, groups, teachers, schedule, client, 2, 'лабораторные занятия'),
+            parse2(classrooms, groups, teachers, schedule, client, 3, 'практические занятия /семинар/')
         )
         tasks = [client.post(f'{local_url}/teachers/{i}') for i in teachers]
         tasks += [client.post(f'{local_url}/classrooms/{i}') for i in classrooms]
         tasks += [client.post(f'{local_url}/groups/{i}') for i in groups]
         await asyncio.gather(*tasks)
         tasks = [client.post(f'{local_url}/schedule/create_periodic', json=i) for i in schedule]
-        responses: tuple[httpx.Response] = await asyncio.gather(*tasks)
-        for res in filter(lambda x: x.status_code != 200, responses):
+        responses: Iterable[httpx.Response | BaseException] = await asyncio.gather(*tasks, return_exceptions=True)
+        for res in filter(lambda x: x.status_code != 200, filter(lambda x: isinstance(x, httpx.Response), responses)):
             pprint(json.loads(res.request.content))
             try:
                 pprint(res.json())
             except json.decoder.JSONDecodeError:
                 print(res)
+        for error in filter(lambda x: isinstance(x, BaseException), responses):
+            print(error)
     return schedule
 
 
@@ -110,7 +110,7 @@ async def parse(classrooms: set,
                                                 raw.children))):
                 # print(i, text)
                 if i == 0:
-                    line['start'], line['end'] = text.split(' - ')
+                    line['start_time'], line['end_time'] = text.split(' - ')
                 elif i == 1:
                     if '.' in text:
                         line['week_type'] = Schedule.week_type[Schedule.shortens[text.split('.')[0]]]
@@ -157,7 +157,7 @@ async def parse2(classrooms: set,
                 for i, text in enumerate(map(lambda x: x.text.strip().strip('\n'),
                                              children)):
                     if i == 0:
-                        line['start'], line['end'] = text.split(' - ')
+                        line['start_time'], line['end_time'] = text.split(' - ')
                     elif i == 1:
                         if '.' in text:
                             line['week_type'] = Schedule.week_type[Schedule.shortens[text.split('.')[0]]]
@@ -175,8 +175,10 @@ async def parse2(classrooms: set,
                         line['name'] = text
                     elif i == 5:
                         if text:
-                            line['teacher_id'] = " ".join(text.split())
-                            teachers.add(text)
+                            teacher = " ".join(text.split())
+                            line['teacher_id'] = teacher
+                            teachers.add(teacher)
+                            print()
                 schedule.append(line)
         except KeyError:
             continue
