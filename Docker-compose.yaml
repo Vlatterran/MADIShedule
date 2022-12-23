@@ -5,10 +5,12 @@ services:
     ports:
       - 8008:80
     environment:
-      - DATABASE_URL=sqlite://db.sqlite3
+      - DATABASE_URL=asyncpg://fastapi:fastapi@db:5432/schedule
     command: uvicorn backend.main:app --host 0.0.0.0 --port 80 --loop uvloop
     networks:
       - app_network
+    depends_on:
+      - db
 
   frontend:
     build: frontend_v2
@@ -21,15 +23,15 @@ services:
     networks:
       - app_network
 
-  prepare:
-    build: dataloader
-    command: python dataloader.py
-    environment:
-      - URL=http://api
-    depends_on:
-      - backend
-    networks:
-      - app_network
+#  prepare:
+#    build: dataloader
+#    command: python dataloader.py
+#    environment:
+#      - URL=http://api
+#    depends_on:
+#      - backend
+#    networks:
+#      - app_network
 
   prometheus:
     container_name: prometheus
@@ -41,6 +43,23 @@ services:
     ports:
       - 9090:9090
 
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=fastapi
+      - POSTGRES_PASSWORD=fastapi
+      - POSTGRES_DB=schedule
+    networks:
+      - app_network
+
 
 networks:
   app_network:
+
+
+volumes:
+  postgres_data:
